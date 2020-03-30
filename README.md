@@ -1,6 +1,6 @@
 # Redux
 
-##Redux에서 사용되는 키워드
+## Redux에서 사용되는 키워드
 
 ### 액션 (action)
 
