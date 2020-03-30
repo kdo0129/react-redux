@@ -1,68 +1,94 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Redux
 
-## Available Scripts
+##Redux에서 사용되는 키워드
 
-In the project directory, you can run:
+### 액션 (action)
 
-### `yarn start`
+상태의 어떤 변화가 필요할 때 액션을 발생시킨다. 하나의 객체로 표현되고 다음과 같은 형식으로 구성되어있다.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```js
+{
+  type: 'TOGGLE_VALUE';
+}
+```
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+액션 객체는 type을 필수적으로 가져야한다. 그 외의 값은 자율적으로 넣어 줄 수 있다.
 
-### `yarn test`
+```js
+{
+  type: "ADD_TODO",
+  data: {
+    id: 0,
+    text: "리덕스 공부하기"
+  }
+}
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+{
+  type: "CHANGE_INPUT",
+  text: "반갑습니다."
+}
+```
 
-### `yarn build`
+### 액션 생성함수 (Action Creator)
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+액션을 만드는 함수이다. 파라미터를 받아와서 액션 객체로 만들어준다.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+```js
+export function addTodo(data) {
+  return {
+    type: 'ADD_TODO',
+    data
+  };
+}
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+// arrow function
+export const changeInput = text => ({
+  type: 'CHANGE_INPUT',
+  text
+});
+```
 
-### `yarn eject`
+액션 생성함수를 만들어서 사용하는 이유는 나중에 컴포넌트에서 액션을 더 쉽게 발생시키기 위함이다. 따라서 export키워드를 사용해 다른 파일에서 불러와 사용하게 만들어준다. 액션 생성함수로 액션 객체를 만드는건 필수적인 작업은 아니다. 바로 액션 객체를 만들어도 상관은 없다.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 리듀서 (Reducer)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+변화를 일으키는 함수이다. state, action 두가지 파라미터를 받아온다.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```js
+const reducer = (state, action) => {
+  // 상태 업데이트 로직
+  return alteredState;
+};
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+리듀서는, 현재의 상태와, 전달 받은 액션을 참고하여 새로운 상태를 만들어서 반환합니다.
 
-## Learn More
+카운터 예제를 보면
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```js
+const counter = (state, action) => {
+  switch (action.type) {
+    case 'INCREASE':
+      return state + 1;
+    case 'DECREASE':
+      return state - 1;
+    default:
+      return state;
+  }
+};
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+> useReducer를 사용할 때는 default에서 에러를 발생시켰지만 리덕스에서는 기존 state를 반환한다.리덕스를 사용 할 때에는 여러개의 리듀서를 만들고 이를 합쳐서 루트 리듀서 (Root Reducer)를 만들 수 있다.
 
-### Code Splitting
+### 스토어 (store)
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+리덕스에서는 한 애플리케이션당 하나의 스토어를 만든다. 스토어 안에는, 현재의 앱 상태와, 리듀서가 들어가있고, 추가적으로 몇가지 내장 함수들이 있다.
 
-### Analyzing the Bundle Size
+### 디스패치 (dispatch)
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+스토어의 내장 함수이며 디스패치는 액션을 발생시키는 것 또는 실행시킨다고 생각하면된다. dispatch 함수에서는 액션을 파라미터로 전달한다. 호출을 하면, 스토어는 리듀서 함수를 실행시켜서 해당 액션을 처리하는 로직이 있다면 액션을 참고하여 새로운 상태를 만들어준다.
 
-### Making a Progressive Web App
+### 구독 (subscribe)
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+스토어의 내장 함수이며 함수 형태의 값을 파라미터로 받아온다.
+특정 함수를 전달해주면 액션이 디스패치 될 때 전달해준 특정 함수가 호출이 된다.
