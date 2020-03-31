@@ -1,8 +1,10 @@
+//action type
 const ADD_TODO = 'todos/ADD_TODO';
 const TOGGLE_TODO = 'todos/TOGGLE_TODO';
 
 let nextId = 1;
 
+//action creator function
 export const addTodo = (text) => ({
 	type: ADD_TODO,
 	todo: {
@@ -16,6 +18,7 @@ export const toggleTodo = (id) => ({
 	id,
 });
 
+//initial state
 const initialState = [
 	/*
   {
@@ -26,6 +29,7 @@ const initialState = [
   */
 ];
 
+//reducer function
 export default function todos(state = initialState, action) {
 	switch (action.type) {
 		case ADD_TODO:
